@@ -128,12 +128,15 @@ fn get_prime_additions(n: i32, output_file: &mut File, primes: &[i32], small_vec
         if n - current_prime == 0 {
             small_vec.push(current_prime);
             if small_vec.len() <= 10 {
+                let mut output_string = String::new();
+
                 for &i in small_vec.iter() {
                     if let Some(letter) = TO_LETTER_MAP.get(&i) {
-                        write!(output_file, "{}", letter)?;
+                        output_string.push_str(letter);
                     }
                 }
-                writeln!(output_file)?;
+
+                writeln!(output_file, "{}", output_string)?;
             }
             small_vec.pop();
         } else if small_vec.len() <= 10 && n - current_prime > 0 {
@@ -154,7 +157,7 @@ fn main() -> io::Result<()> {
 
     let start = Instant::now();
 
-    get_prime_additions(50, &mut output_file, &primes, &mut small_vec)?;
+    get_prime_additions(60, &mut output_file, &primes, &mut small_vec)?;
     
     let duration = start.elapsed();
     println!("Time taken: {:?}", duration);
