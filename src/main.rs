@@ -1,9 +1,8 @@
 // Made by Isaac Salzman 2024-05-06
 
 // Attempt to solve below page of the Liber Primus from the Cicada 3301 puzzle
-// https://static.wikia.nocookie.net/uncovering-cicada/images/6/62/Onion_3_v3.jpg/revision/latest?cb=20140115114029
 // Also know as page "Some wisdom" on the Uncovering Cicada Wiki
-// https://uncovering-cicada.fandom.com/wiki/How_the_solved_pages_of_the_Liber_Primus_were_solved
+// https://uncovering-cicada.fandom.com/wiki/How_the_solved_pages_of_the_Liber_Primus_were_solved#Some_wisdom
 
 // Compile with optimizaiton when using numbers >30: cargo run --release
 
@@ -129,7 +128,7 @@ fn get_prime_additions(n: i32, output_file: &mut File, primes: &[i32], small_vec
         if n - current_prime == 0 {
             small_vec.push(current_prime);
             if small_vec.len() <= 10 {
-                for i in &*small_vec {
+                for &i in small_vec.iter() {
                     if let Some(letter) = TO_LETTER_MAP.get(&i) {
                         write!(output_file, "{}", letter)?;
                     }
@@ -155,7 +154,7 @@ fn main() -> io::Result<()> {
 
     let start = Instant::now();
 
-    get_prime_additions(30, &mut output_file, &primes, &mut small_vec)?;
+    get_prime_additions(50, &mut output_file, &primes, &mut small_vec)?;
     
     let duration = start.elapsed();
     println!("Time taken: {:?}", duration);
