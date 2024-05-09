@@ -120,7 +120,7 @@ fn nopeity(numbers: &Vec<i32>) {
     println!();
 }
 
-fn get_prime_additions(n: i32, output_file: &mut File, primes: &[i32], small_vec: &mut Vec<i32>) -> io::Result<()> {
+fn get_prime_additions_helper(n: i32, output_file: &mut File, primes: &[i32], small_vec: &mut Vec<i32>) {
     let mut small_primes = primes;
 
     while !small_primes.is_empty() {
@@ -136,31 +136,37 @@ fn get_prime_additions(n: i32, output_file: &mut File, primes: &[i32], small_vec
                     }
                 }
 
-                writeln!(output_file, "{}", output_string)?;
+                writeln!(output_file, "{}", output_string).unwrap_or_else(|e| eprintln!("Error in writing to output file: {}", e));
             }
             small_vec.pop();
         } else if small_vec.len() <= 10 && n - current_prime > 0 {
             small_vec.push(current_prime); 
-            get_prime_additions(n - current_prime, output_file, primes, small_vec)?;
+            get_prime_additions_helper(n - current_prime, output_file, primes, small_vec);
             small_vec.pop();
         }
         small_primes = &small_primes[1..];
     }
-
-    Ok(())
 }
 
-fn main() -> io::Result<()> {
-    let mut output_file = File::create("output.txt")?;
+fn get_prime_additions(file_name: &str, n: i32) {
+    let mut output_file = match File::create(file_name) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("Error creating output file: {}", e);
+            return;
+        }
+    };
     let primes: [i32; 29] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109];
     let mut small_vec: Vec<i32> = Vec::new();
 
+    get_prime_additions_helper(n, &mut output_file, &primes, &mut small_vec);
+}
+
+fn main() {
     let start = Instant::now();
 
-    get_prime_additions(60, &mut output_file, &primes, &mut small_vec)?;
-    
+    get_prime_additions("output.txt", 60);
+
     let duration = start.elapsed();
     println!("Time taken: {:?}", duration);
-
-    Ok(())
 }
